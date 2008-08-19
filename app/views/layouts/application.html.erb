@@ -19,9 +19,6 @@
 			<% end -%>
 			<%= @content_for_layout %>
 		</div>
-		<% if ENV["RAILS_ENV"] == "development" %>
-			<%= debug(params) %>
-		<% end %>
 	</div>
 </body>
 </html>
