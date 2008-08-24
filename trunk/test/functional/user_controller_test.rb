@@ -52,7 +52,7 @@ class UserControllerTest < ActionController::TestCase
 	
 	def test_registration_failure
 		post :register, :user => {	:screen_name	=> "aa/noyes",
-																:email				=> "anoyesatexample.com",
+																:email				=> "anoyes@example,com",
 																:password			=> "sun" }
 		assert_response :success
 		assert_template "register"
@@ -71,7 +71,7 @@ class UserControllerTest < ActionController::TestCase
 																					:value => "aa/noyes"},
 												:parent => error_div
 		assert_tag "input", :attributes => 	{ :name => "user[email]",
-																					:value => "anoyesatexample.com"},
+																					:value => "anoyes@example,com"},
 												:parent => error_div
 		assert_tag "input", :attributes => {	:name => "user[password]",
 																					:value => "sun"},
