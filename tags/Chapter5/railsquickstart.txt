@@ -1,0 +1,20 @@
+> rails rails_space
+
+> ruby script/server
+
+> ruby script/generate controller Site index about help
+
+Change config/routes.rb
+	map.connect '', :controller => "site"
+Change config/database.yml
+    development:
+    adapter: mysql
+    database: rails_space_development
+    username: root
+    password: mysql
+    timeout: 5000
+
+	
+ruby script/generate controller Test
+ruby script/generate model Test
+
