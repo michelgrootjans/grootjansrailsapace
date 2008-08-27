@@ -6,6 +6,11 @@ class UserController; def rescue_action(e) raise e end; end
 
 class UserControllerTest < ActionController::TestCase
 
+	def setup
+		# this user is originally valid, but we may change it's attributes
+		@valid_user = users(:valid_user)
+	end
+
 	def test_registration_page
 		get :register
 		title = assigns(:title)
@@ -82,4 +87,91 @@ class UserControllerTest < ActionController::TestCase
 												:parent => error_div
 	end
 
+	def test_login_page
+		get :login
+		title = assigns(:title)
+		assert_equal "Log in to RailsSpace", title
+		assert_response :success
+		assert_template "login"
+		assert_tag "form",
+		           :attributes => { :action => "/user/login",
+		                            :method => "post" }
+		assert_tag "input",
+		           :attributes => { :name   => "user[screen_name]",
+		                            :type   => "text",
+																:size   => User::SCREEN_NAME_SIZE,
+																:maxlength => User::SCREEN_NAME_MAX_LENGTH }
+
+		assert_tag "input",
+		           :attributes => { :name   => "user[password]",
+		                            :type   => "password",
+																:size   => User::PASSWORD_SIZE,
+																:maxlength => User::PASSWORD_MAX_LENGTH }
+		assert_tag "input", :attributes => { :type  => "submit",
+		                                     :value => "Login!" }
+	end
+	
+	def test_login_success
+		try_to_login @valid_user
+		assert_not_nil session[:user_id]
+		assert_equal @valid_user.id, session[:user_id]
+		assert_equal "User #{@valid_user.screen_name} logged in!", flash[:notice]
+		assert_redirected_to :action => "index"
+	end
+
+	def test_login_failure_with_nonexistant_screen_name
+		invalid_user = @valid_user
+		invalid_user.screen_name = "no such user"
+		try_to_login invalid_user
+		assert_template "login"
+		assert_equal "Invalid screen name/password combination", flash[:notice]
+		# make sure the screen name will be displayed again, but not the password
+		user = assigns(:user)
+		assert_equal invalid_user.screen_name, user.screen_name
+		assert_nil user.password
+	end
+
+	def test_login_failure_with_wrong_password
+		invalid_user = @valid_user
+		invalid_user.password += "baz"
+		try_to_login invalid_user
+		assert_template "login"
+		assert_equal "Invalid screen name/password combination", flash[:notice]
+		# make sure the screen name will be displayed again, but not the password
+		user = assigns(:user)
+		assert_equal invalid_user.screen_name, user.screen_name
+		assert_nil user.password
+	end
+	
+	def test_logout
+		try_to_login @valid_user
+		assert_not_nil session[:user_id]
+		get :logout
+		assert_response :redirect
+		assert_redirected_to :action => "index", :controller => "site"
+		assert_equal "Logged out", flash[:notice]
+		assert_nil session[:user_id]
+	end
+	
+	def test_navigation_logged_in
+		authorize(@valid_user)
+		get :index
+		assert_tag "a", :content => /Logout/,
+		                :attributes => { :href => "/user/logout" }
+		assert_no_tag "a", :content => /Register/
+		assert_no_tag "a", :content => /Login/
+	end
+	
+	private
+	
+	# try to log a user in using the login action
+	def try_to_login(user)
+		post :login, :user => { :screen_name => user.screen_name,
+		                        :password    => user.password }
+	end
+	
+	# authorize a user
+	def authorize(user)
+		@request.session[:user_id] = user.id
+	end
 end

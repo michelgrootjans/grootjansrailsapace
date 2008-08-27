@@ -35,7 +35,14 @@ class SiteControllerTest < ActionController::TestCase
 		assert_template "help"
 	end
 	
-  def test_truth
-    assert true
-  end
+	def test_navigation_not_logged_in
+		get :index
+		assert_tag "a", :content => /Register/,
+		                :attributes => { :href => "/user/register" }
+		assert_tag "a", :content => /Login/,
+		                :attributes => { :href => "/user/login" }
+		# test link_to_unless_current
+		# NOT WORKING
+		assert_no_tag "a", :content => /Home/
+	end
 end

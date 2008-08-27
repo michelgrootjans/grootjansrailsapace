@@ -16,7 +16,7 @@ class UserController < ApplicationController
   end
 
   def login
-		@title = "Login to RailsSpace"
+		@title = "Log in to RailsSpace"
 		if request.post? and params[:user]
 			@user = User.new(params[:user])
 			user = User.find_by_screen_name_and_password(@user.screen_name, @user.password)
@@ -31,5 +31,11 @@ class UserController < ApplicationController
 			end
 		end
   end
+	
+	def logout
+		session[:user_id] = nil
+		flash[:notice] = "Logged out"
+		redirect_to :action => "index", :controller => "site"
+	end
 
 end
