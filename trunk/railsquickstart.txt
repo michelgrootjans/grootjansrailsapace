@@ -15,6 +15,10 @@ Change config/database.yml
     timeout: 5000
 
 	
-ruby script/generate controller Test
-ruby script/generate model Test
-
+> ruby script/generate controller Test
+> ruby script/generate model Test
+> rake db:migrate
+> rake test
+> rake test:units
+> rake test:functionals
+> rake test:recent
