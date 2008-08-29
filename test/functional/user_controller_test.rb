@@ -162,6 +162,20 @@ class UserControllerTest < ActionController::TestCase
 		assert_no_tag "a", :content => /Login/
 	end
 	
+	def test_index_unathorized
+		get :index
+		assert_response :redirect
+		assert_redirected_to :action => "login"
+		assert_equal "Please log in first", flash[:notice]
+	end
+	
+	def test_index_authorized
+		authorize(@valid_user)
+		get :index
+		assert_response :success
+		assert_template "index"
+	end
+	
 	private
 	
 	# try to log a user in using the login action
