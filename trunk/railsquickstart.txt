@@ -17,6 +17,9 @@ Change config/database.yml
 	
 > ruby script/generate controller Test
 > ruby script/generate model Test
+
+> rake
+> rake stats
 > rake db:migrate
 > rake test
 > rake test:units
