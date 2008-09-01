@@ -9,35 +9,27 @@ class UserController < ApplicationController
 
   def register
 		@title = "Register"
-		if request.post? and params[:user]
+		if param_posted(:user)
 			@user = User.new(params[:user])
 			if @user.save
 				@user.login!(session)
 				flash[:notice] = "User #{@user.screen_name} created!"
-				if (redirect_url = session[:protected_page])
-					session[:protected_page] = nil
-					redirect_to redirect_url
-				else
-					redirect_to :action => "index"
-				end
+				redirect_to_forwarding_url
+			else
+				@user.clear_password!
 			end
 		end
   end
 
   def login
 		@title = "Log in to RailsSpace"
-		if request.post? and params[:user]
+		if param_posted(:user)
 			@user = User.new(params[:user])
 			user = User.find_by_screen_name_and_password(@user.screen_name, @user.password)
 			if user
 				user.login!(session)
 				flash[:notice] = "User #{@user.screen_name} logged in!"
-				if (redirect_url = session[:protected_page])
-					session[:protected_page] = nil
-					redirect_to redirect_url
-				else
-					redirect_to :action => "index"
-				end
+				redirect_to_forwarding_url
 			else
 				#don't show the password in the view
 				@user.clear_password!
@@ -61,6 +53,21 @@ class UserController < ApplicationController
 			flash[:notice] = "Please log in first"
 			redirect_to :action => "login"
 			return false
+		end
+	end
+	
+	# returns true if a parameter corresponding to  the given symbol was posted
+	def param_posted(symbol)
+		request.post? and params[symbol]
+	end
+	
+	# redirect to the previously requested url (if present)
+	def redirect_to_forwarding_url
+		if (redirect_url = session[:protected_page])
+			session[:protected_page] = nil
+			redirect_to redirect_url
+		else
+			redirect_to :action => "index"
 		end
 	end
 end

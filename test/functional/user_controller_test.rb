@@ -84,7 +84,7 @@ class UserControllerTest < ActionController::TestCase
 																					:value => "anoyes@example,com"},
 												:parent => error_div
 		assert_tag "input", :attributes => {	:name => "user[password]",
-																					:value => "sun"},
+																					:value => nil},
 												:parent => error_div
 	end
 
@@ -178,33 +178,16 @@ class UserControllerTest < ActionController::TestCase
 	end
 
 	def test_login_friendly_url_forwarding
-		# get protected page
-		get :index
-		assert_response :redirect
-		assert_redirected_to :action => "login"
-		
-		try_to_login @valid_user
-		assert_response :redirect
-		assert_redirected_to :action => "index"
-		# make sure the forwarding url has been cleared
-		assert_nil session[:protected_page]
+		user = { :screen_name => @valid_user.screen_name,
+		         :password    => @valid_user.password }
+		friendly_url_forwarding_aux(:login, :index, user)
 	end
 	
 	def test_register_friendly_url_forwarding
-		# get protected page
-		get :index
-		assert_response :redirect
-		assert_redirected_to :action => "login"
-		
-		# now register instead of logging in
-		post :register, :user => { :screen_name => "new_screen_name",
-		                           :email       => "valid@example.com",
-															 :password    => "long_enough_password" }
-		
-		assert_response :redirect
-		assert_redirected_to :action => "index"
-		# make sure the forwarding url has been cleared
-		assert_nil session[:protected_page]
+		user = { :screen_name => "new_screen_name",
+		         :email       => "valid@example.com",
+						 :password    => "long_enough_password"}
+		friendly_url_forwarding_aux(:register, :index, user)
 	end
 	
 	private
@@ -218,5 +201,20 @@ class UserControllerTest < ActionController::TestCase
 	# authorize a user
 	def authorize(user)
 		@request.session[:user_id] = user.id
+	end
+	
+	def friendly_url_forwarding_aux(test_page, protected_page, user)
+		# get protected page
+		get protected_page
+		assert_response :redirect
+		assert_redirected_to :action => "login"
+		
+		# now register instead of logging in
+		post test_page, :user => user
+		
+		assert_response :redirect
+		assert_redirected_to :action => protected_page
+		# make sure the forwarding url has been cleared
+		assert_nil session[:protected_page]
 	end
 end
