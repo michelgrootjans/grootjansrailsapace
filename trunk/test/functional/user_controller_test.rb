@@ -5,6 +5,7 @@ require 'user_controller'
 class UserController; def rescue_action(e) raise e end; end
 
 class UserControllerTest < ActionController::TestCase
+	include ApplicationHelper
 
 	def setup
 		# this user is originally valid, but we may change it's attributes
@@ -55,7 +56,7 @@ class UserControllerTest < ActionController::TestCase
 		assert_redirected_to :action => "index"
 		
 		#Make sure the user is logged in properly
-		assert_not_nil session[:user_id]
+		assert logged_in?
 		assert_equal user.id, session[:user_id]
 	end
 	
@@ -113,7 +114,7 @@ class UserControllerTest < ActionController::TestCase
 	
 	def test_login_success
 		try_to_login @valid_user
-		assert_not_nil session[:user_id]
+		assert logged_in?
 		assert_equal @valid_user.id, session[:user_id]
 		assert_equal "User #{@valid_user.screen_name} logged in!", flash[:notice]
 		assert_redirected_to :action => "index"
@@ -145,12 +146,12 @@ class UserControllerTest < ActionController::TestCase
 	
 	def test_logout
 		try_to_login @valid_user
-		assert_not_nil session[:user_id]
+		assert logged_in?
 		get :logout
 		assert_response :redirect
 		assert_redirected_to :action => "index", :controller => "site"
 		assert_equal "Logged out", flash[:notice]
-		assert_nil session[:user_id]
+		assert !logged_in?
 	end
 	
 	def test_navigation_logged_in
@@ -174,6 +175,36 @@ class UserControllerTest < ActionController::TestCase
 		get :index
 		assert_response :success
 		assert_template "index"
+	end
+
+	def test_login_friendly_url_forwarding
+		# get protected page
+		get :index
+		assert_response :redirect
+		assert_redirected_to :action => "login"
+		
+		try_to_login @valid_user
+		assert_response :redirect
+		assert_redirected_to :action => "index"
+		# make sure the forwarding url has been cleared
+		assert_nil session[:protected_page]
+	end
+	
+	def test_register_friendly_url_forwarding
+		# get protected page
+		get :index
+		assert_response :redirect
+		assert_redirected_to :action => "login"
+		
+		# now register instead of logging in
+		post :register, :user => { :screen_name => "new_screen_name",
+		                           :email       => "valid@example.com",
+															 :password    => "long_enough_password" }
+		
+		assert_response :redirect
+		assert_redirected_to :action => "index"
+		# make sure the forwarding url has been cleared
+		assert_nil session[:protected_page]
 	end
 	
 	private
