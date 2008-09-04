@@ -1,8 +1,7 @@
-# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
-
 <% 1.upto(1000) do |i| %>
 user_<%= i %>:
   id: <%= i %>
   screen_name: user_<%= i %>
   email: user_<%= i %>@example.com
   password: password_<%= i %>
+<% end %>
