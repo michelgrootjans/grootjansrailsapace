@@ -1,22 +1,12 @@
 > rails rails_space
 
 > ruby script/server
+> ruby script/server -p 3001 -e production
+
 
 > ruby script/generate controller Site index about help
 
-Change config/routes.rb
-	map.connect '', :controller => "site"
-Change config/database.yml
-    development:
-    adapter: mysql
-    database: rails_space_development
-    username: root
-    password: mysql
-    timeout: 5000
-
-	
-> ruby script/generate controller Test
-> ruby script/generate model Test
+> ruby script/generate scaffold BlogPost title:string body:text
 
 > rake
 > rake stats
@@ -25,3 +15,12 @@ Change config/database.yml
 > rake test:units
 > rake test:functionals
 > rake test:recent
+
+> rake doc:app
+
+
+TODO:
+- partials
+- load test
+- functional test
+
