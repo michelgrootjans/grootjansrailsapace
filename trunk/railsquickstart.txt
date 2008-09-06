@@ -1,26 +1,63 @@
-> rails rails_space
+> rails visug
+> cd visug
 
+Ruby
+****
+
+["java", ".net", "ruby"].to_sentence
+[1,2,3,4,5,6,7].in_groups_of 3
+
+message = "Hello world!"
+message.at 6
+message. to 6
+message.from 6
+
+"cat".pluralize
+"cats".pluralize
+"errata".singularize
+"goose".pluralize
+
+Inflector.inflections do|x|
+	x.irregular "goose", "geese"
+end
+
+"goose".pluralize
+"canadian goose".pluralize
+"wildgeese".singularize
+
+3.ordinalize
+3.minutes
+3.megabytes
+3.hours
+3.hours.from_now
+3.hours.ago
+
+Rails
+*****
 > ruby script/server
+
+development:
+  adapter: mysql
+  database: visug_development
+  username: root
+  password: mysql
+  timeout: 5000
+
+> ruby script/generate scaffold Contact name:string birthday:date notes:text
+> rake db:migrate
+
+Contact:
+	validates_uniqueness_of :name
+	validates_length_of :name, :within => 4..20
+
+> rake db:migrate RAILS_ENV=production
 > ruby script/server -p 3001 -e production
-
-
-> ruby script/generate controller Site index about help
-
-> ruby script/generate scaffold BlogPost title:string body:text
 
 > rake
 > rake stats
-> rake db:migrate
 > rake test
 > rake test:units
 > rake test:functionals
 > rake test:recent
 
 > rake doc:app
-
-
-TODO:
-- partials
-- load test
-- functional test
-
