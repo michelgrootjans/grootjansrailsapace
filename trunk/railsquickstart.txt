@@ -34,8 +34,6 @@ end
 
 Rails
 *****
-> ruby script/server
-
 development:
   adapter: mysql
   database: visug_development
@@ -43,8 +41,15 @@ development:
   password: mysql
   timeout: 5000
 
+> ruby script/server
 > ruby script/generate scaffold Contact name:string birthday:date notes:text
 > rake db:migrate
+> rake
+> rake stats
+> rake test
+> rake test:units
+> rake test:functionals
+> rake test:recent
 
 Contact:
 	validates_uniqueness_of :name
@@ -53,11 +58,5 @@ Contact:
 > rake db:migrate RAILS_ENV=production
 > ruby script/server -p 3001 -e production
 
-> rake
-> rake stats
-> rake test
-> rake test:units
-> rake test:functionals
-> rake test:recent
-
-> rake doc:app
+> Contact.find_by_notes "test"
+> Contact.find_by_notes_and_by_name "test", "test2"
