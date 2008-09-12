@@ -1,4 +1,4 @@
-> rails visug
+> rails visug -d mysql
 > cd visug
 
 Ruby
@@ -14,7 +14,7 @@ message.from 6
 
 "cat".pluralize
 "cats".pluralize
-"errata".singularize
+"person".singularize
 "goose".pluralize
 
 Inflector.inflections do|x|
